@@ -1,0 +1,86 @@
+//
+//  NavigationBar.swift
+//  SwiftUiAppForiOS15
+//
+//  Created by Thrace on 12/6/22.
+//
+
+import SwiftUI
+
+struct NavigationBar: View {
+    
+    @State var showSearch = false
+    @State var showAccount = false
+    @Binding var hasScrolled: Bool
+//    @AppStorage("showModal") var showModal = false
+    
+    var title = ""
+    
+    var body: some View {
+        ZStack {
+            
+            Color.clear
+                .background(.ultraThinMaterial)
+                .blur(radius: 10)
+                .opacity(hasScrolled ? 1:0)
+            
+            Text(title)
+                .animatableFont(size: hasScrolled ? 22 : 34, weight: .bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 20)
+                .padding(.top, 20)
+                .offset(y: hasScrolled ? -4 : 0)
+            
+            HStack(spacing: 16) {
+                Button {
+                    showSearch = true
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.body.weight(.bold))
+                        .frame(width: 36, height: 36)
+                        .foregroundColor(.secondary)
+                        .background(.ultraThinMaterial, in:
+                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        )
+                    .strokeStyle(cornerRadius: 14)
+                }
+                .sheet(isPresented: $showSearch) {
+                    SearchView()
+                }
+                
+                Button {
+//                    showAccount = true
+                    withAnimation(Animation.spring(response: 0.6, dampingFraction: 0.9)) {
+//                        showModal = true
+                    }
+                } label: {
+                    Image("Avatar Default")
+                        .resizable()
+                        .frame(width: 26, height: 26)
+                        .cornerRadius(10)
+                        .padding(8)
+                        .background(.ultraThinMaterial, in:
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        )
+                    .strokeStyle(cornerRadius: 18)
+                }
+                .sheet(isPresented: $showAccount) {
+                    AccountView()
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing, 20)
+            .padding(.top, 20)
+            .offset(y: hasScrolled ? -4 : 0)
+        }
+        .frame(height: hasScrolled ? 44 : 70)
+        .frame(maxHeight: .infinity, alignment: .top)
+    }
+}
+
+struct NavigationBar_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationBar(hasScrolled: .constant(false), title: "Test Title").preferredColorScheme(.light).previewDevice("iPhone 13 Pro")
+        NavigationBar(hasScrolled: .constant(false), title: "Test Title").preferredColorScheme(.dark).previewDevice("iPhone 13 Pro")
+    }
+}
